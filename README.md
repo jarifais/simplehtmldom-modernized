@@ -19,10 +19,14 @@ Mantener la API pública de Simple HTML DOM 1.9.1 y aplicar correcciones increme
 - `benchmarks/`: infraestructura *smoke* F3-001; **no** proporciona comparativas concluyentes de rendimiento.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint de los archivos de biblioteca incluidos en este repositorio.
 
+### Instalación manual: archivo PHP único
+
+Descarga [`simple_html_dom.php`](simple_html_dom.php), pulsa **Raw** en GitHub y guarda el archivo junto a tu aplicación. No necesita Composer ni otros archivos de este repositorio para la carga clásica. Es una copia byte a byte de `librerias/fase1/simple_html_dom.php`, con SHA-256 `bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25`. La versión continúa en desarrollo; todavía no existe una release estable.
+
 ### Uso básico
 
 ```php
-require_once __DIR__ . '/librerias/fase1/simple_html_dom.php';
+require_once __DIR__ . '/simple_html_dom.php';
 $html = str_get_html('<p class="ejemplo">Hola</p>');
 if ($html !== false) {
     echo $html->find('p', 0)->plaintext;
@@ -73,10 +77,14 @@ Preserve the public API of Simple HTML DOM 1.9.1 while introducing incremental, 
 - `benchmarks/`: F3-001 smoke-test infrastructure; **not** a conclusive performance comparison.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint for the library files included in this repository.
 
+### Manual installation: one PHP file
+
+Download [`simple_html_dom.php`](simple_html_dom.php), select **Raw** on GitHub, and save it alongside your application. Traditional usage needs neither Composer nor other files from this repository. It is byte-for-byte identical to `librerias/fase1/simple_html_dom.php`, with SHA-256 `bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25`. This fork remains under development; no stable release is available yet.
+
 ### Basic usage
 
 ```php
-require_once __DIR__ . '/librerias/fase1/simple_html_dom.php';
+require_once __DIR__ . '/simple_html_dom.php';
 $html = str_get_html('<p class="example">Hello</p>');
 if ($html !== false) {
     echo $html->find('p', 0)->plaintext;
