@@ -1,0 +1,51 @@
+# CI-001: Validacion automatica / Automated validation
+name: CI - PHP Linux y Windows / PHP Linux and Windows
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validacion:
+    name: PHP 8.4 - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - name: Obtener codigo / Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP y Composer / Setup PHP and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: dom, mbstring, xml, xmlwriter, iconv, openssl, zlib, zip
+          ini-values: allow_url_fopen=1
+          tools: composer:v2
+          coverage: none
+
+      - name: Ejecutar validacion integral / Run full validation
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            & ./.github/ci/validar.ps1
+          }
+
+      - name: Conservar informes (sin certificados) / Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: informes-${{ matrix.os }}
+          path: resultados/
+          if-no-files-found: warn
+          retention-days: 7
