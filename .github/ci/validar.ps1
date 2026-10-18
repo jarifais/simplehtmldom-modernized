@@ -60,7 +60,7 @@
         Write-Host "LINT/UTF-8: PASS ($($phpFiles.Count) PHP)" -ForegroundColor Green
 
         $baseline = Get-Content (Join-Path $root 'HASHES_LIBRERIAS_BASE.json') -Raw -Encoding UTF8 | ConvertFrom-Json
-        Assert-Check ($baseline.original.simple_html_dom.php -eq 'd3fcca27ce5d1c6ddb06402d8ea22ee1b3989f62c44e2025154c9d4eef501cdd') 'Referencia original modificada.'
+        Assert-Check ($baseline.original.'simple_html_dom.php' -eq 'd3fcca27ce5d1c6ddb06402d8ea22ee1b3989f62c44e2025154c9d4eef501cdd') 'Referencia original modificada.'
         foreach ($version in @('original','fase1')) {
             foreach ($name in @('simple_html_dom.php','LICENSE')) {
                 $expected = $baseline.$version.$name
