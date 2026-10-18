@@ -32,7 +32,7 @@ if ($html !== false) {
 
 ### Validación local
 
-El entorno de pruebas de Windows requiere PHP **8.2 o posterior**, PowerShell y, para HTTPS, OpenSSL. Si Composer está disponible, puede instalar PHPUnit. El `composer.json` de la raíz configura el entorno de pruebas, **no** es aún un paquete distribuible. El `composer.json` de la raíz configura el entorno de pruebas, **no** es aún un paquete distribuible. Desde la raíz:
+El entorno de pruebas de Windows requiere PHP **8.2 o posterior**, PowerShell y, para HTTPS, OpenSSL. Si Composer está disponible, puede instalar PHPUnit. El `composer.json` de la raíz configura el entorno de pruebas, **no** es aún un paquete distribuible. Desde la raíz:
 
 ```powershell
 .\configurar_entorno.ps1
@@ -86,7 +86,7 @@ if ($html !== false) {
 
 ### Local validation
 
-The Windows test environment requires PHP **8.2 or newer**, PowerShell, and OpenSSL for HTTPS. Composer can install PHPUnit when available. The root `composer.json` describes the **test environment**, not yet a distributable library package. The root `composer.json` describes the **test environment**, not yet a distributable library package. From the repository root:
+The Windows test environment requires PHP **8.2 or newer**, PowerShell, and OpenSSL for HTTPS. Composer can install PHPUnit when available. The root `composer.json` describes the **test environment**, not yet a distributable library package. From the repository root:
 
 ```powershell
 .\configurar_entorno.ps1
