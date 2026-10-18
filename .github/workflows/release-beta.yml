@@ -1,0 +1,70 @@
+# REL-001: first beta only after verified main CI + binary-identical ZIP
+name: REL-001 - Beta protegida / Guarded prerelease
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches:
+      - release/v0.1.0-beta.1
+
+permissions:
+  contents: read
+
+concurrency:
+  group: rel-001-v0.1.0-beta.1
+  cancel-in-progress: false
+
+jobs:
+  revisar:
+    name: Revisar guion de release / Review release automation
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: read
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Comprobar sintaxis y fuentes / Validate script and sources
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n releases/publicar_beta.sh
+          test -s releases/NOTAS_v0.1.0-beta.1.md
+          test "$(sha256sum simple_html_dom.php | cut -d' ' -f1)" = "bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25"
+          cmp -s simple_html_dom.php librerias/fase1/simple_html_dom.php
+          test "$(sha256sum librerias/original/simple_html_dom.php | cut -d' ' -f1)" = "d3fcca27ce5d1c6ddb06402d8ea22ee1b3989f62c44e2025154c9d4eef501cdd"
+          echo 'REL-001: preflight del PR PASS; ninguna release publicada.'
+
+  publicar:
+    name: Publicar beta verificada / Publish verified beta
+    if: github.event_name == 'push' && github.ref == 'refs/heads/release/v0.1.0-beta.1'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    permissions:
+      contents: write
+      actions: read
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout commit exacto / Exact checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          persist-credentials: true
+
+      - name: Preparar PHP 8.4 / Setup PHP 8.4
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: iconv, mbstring
+          coverage: none
+
+      - name: Exigir CI completa, ZIP idéntico y seis assets / Gate and publish
+        shell: bash
+        run: |
+          set -euo pipefail
+          bash -n releases/publicar_beta.sh
+          bash releases/publicar_beta.sh
