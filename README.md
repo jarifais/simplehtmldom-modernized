@@ -23,6 +23,27 @@ Mantener la API pública de Simple HTML DOM 1.9.1 y aplicar correcciones increme
 
 La [construcción automática del ZIP](https://github.com/jarifais/simplehtmldom-modernized/actions/workflows/distribucion.yml) genera el artefacto `paquete-ubuntu-24.04` y su equivalente de Windows, con `simplehtmldom-modernized-development.zip` y su SHA-256. Abre una ejecución correcta de **Distribucion ZIP** y descarga el artefacto en **Artifacts**; para descargar artefactos de Actions puede ser necesario iniciar sesión en GitHub. El ZIP contiene `simple_html_dom.php`, la licencia MIT, instrucciones bilingües, un ejemplo y el manifiesto `SHA256SUMS.txt`. El ZIP se verifica desde una carpeta aislada; Linux y Windows deben producir archivos idénticos. Los artefactos de Actions son temporales (7 días en nuestro workflow): una descarga permanente mediante GitHub Releases se preparará en REL-001.
 
+### Instalación con Composer desde GitHub (desarrollo)
+
+Esta vía permite usar `vendor/autoload.php` sin copiar manualmente el PHP. **Todavía no estamos en Packagist**; hasta REL-001 se instala una rama de desarrollo desde el repositorio Git:
+
+```shell
+composer config repositories.simplehtmldom-modernized vcs https://github.com/jarifais/simplehtmldom-modernized
+composer require jarifais/simplehtmldom-modernized:dev-main
+```
+
+```php
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+$html = str_get_html('<h1>Hola Composer</h1>');
+if ($html !== false) {
+    echo $html->find('h1', 0)->plaintext;
+    $html->clear();
+}
+```
+
+Requisitos declarados: PHP 8.2 o superior y extensión `iconv`; `mbstring` se recomienda para detección opcional de codificación. La matriz automática actual **solo verifica PHP 8.4** en Ubuntu y Windows. Composer carga `librerias/fase1/simple_html_dom.php`, idéntico byte a byte al archivo `simple_html_dom.php` de descarga manual. No cargues simultáneamente este fork y otra variante con las mismas funciones/clases globales. Es una rama `dev-main`, no una versión estable; fija una referencia concreta en tu proyecto si necesitas reproducibilidad.
+
 ### Instalación manual: archivo PHP único
 
 Descarga [`simple_html_dom.php`](simple_html_dom.php), pulsa **Raw** en GitHub y guarda el archivo junto a tu aplicación. No necesita Composer ni otros archivos de este repositorio para la carga clásica. Es una copia byte a byte de `librerias/fase1/simple_html_dom.php`, con SHA-256 `bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25`. La versión continúa en desarrollo; todavía no existe una release estable.
@@ -40,7 +61,7 @@ if ($html !== false) {
 
 ### Validación local
 
-El entorno de pruebas de Windows requiere PHP **8.2 o posterior**, PowerShell y, para HTTPS, OpenSSL. Si Composer está disponible, puede instalar PHPUnit. El `composer.json` de la raíz configura el entorno de pruebas, **no** es aún un paquete distribuible. Desde la raíz:
+El entorno de pruebas de Windows requiere PHP **8.2 o posterior**, PowerShell y, para HTTPS, OpenSSL. Si Composer está disponible, puede instalar PHPUnit. El `composer.json` de la raíz es ahora el manifiesto de biblioteca Composer; PHPUnit y las suites siguen siendo herramientas de desarrollo. Desde la raíz:
 
 ```powershell
 .\configurar_entorno.ps1
@@ -85,6 +106,27 @@ Preserve the public API of Simple HTML DOM 1.9.1 while introducing incremental, 
 
 The [automated ZIP build](https://github.com/jarifais/simplehtmldom-modernized/actions/workflows/distribucion.yml) publishes the `paquete-ubuntu-24.04` artifact and its Windows counterpart, including `simplehtmldom-modernized-development.zip` and its SHA-256. Open a successful **Distribucion ZIP** workflow run and download the artifact under **Artifacts**; signing in to GitHub may be required. The ZIP contains `simple_html_dom.php`, the MIT license, bilingual instructions, an example, and a `SHA256SUMS.txt` manifest. Both platforms must produce identical archives and the package is tested outside the repository. Workflow artifacts expire after 7 days; permanent downloadable release assets are planned for REL-001.
 
+### Composer installation from GitHub (development)
+
+This method enables `vendor/autoload.php` without manually copying PHP files. **Not yet listed on Packagist**; until tagged releases exist, install the development branch through this Git repository:
+
+```shell
+composer config repositories.simplehtmldom-modernized vcs https://github.com/jarifais/simplehtmldom-modernized
+composer require jarifais/simplehtmldom-modernized:dev-main
+```
+
+```php
+<?php
+require_once __DIR__ . '/vendor/autoload.php';
+$html = str_get_html('<h1>Hello Composer</h1>');
+if ($html !== false) {
+    echo $html->find('h1', 0)->plaintext;
+    $html->clear();
+}
+```
+
+Declared runtime requirements: PHP 8.2+ and `iconv`; `mbstring` is suggested for optional charset detection. **Only PHP 8.4** is currently tested by CI on Ubuntu and Windows. Composer autoloads `librerias/fase1/simple_html_dom.php`, byte-for-byte identical to the standalone root `simple_html_dom.php`. Do not load another fork exposing the same global symbols simultaneously. `dev-main` is a development branch, not a stable release; pin a specific reference in production projects for reproducibility.
+
 ### Manual installation: one PHP file
 
 Download [`simple_html_dom.php`](simple_html_dom.php), select **Raw** on GitHub, and save it alongside your application. Traditional usage needs neither Composer nor other files from this repository. It is byte-for-byte identical to `librerias/fase1/simple_html_dom.php`, with SHA-256 `bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25`. This fork remains under development; no stable release is available yet.
@@ -102,7 +144,7 @@ if ($html !== false) {
 
 ### Local validation
 
-The Windows test environment requires PHP **8.2 or newer**, PowerShell, and OpenSSL for HTTPS. Composer can install PHPUnit when available. The root `composer.json` describes the **test environment**, not yet a distributable library package. From the repository root:
+The Windows test environment requires PHP **8.2 or newer**, PowerShell, and OpenSSL for HTTPS. Composer can install PHPUnit when available. The root `composer.json` is now the Composer library manifest; PHPUnit and the test suites remain development tools. From the repository root:
 
 ```powershell
 .\configurar_entorno.ps1
