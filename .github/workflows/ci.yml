@@ -70,8 +70,10 @@ jobs:
           tools: composer:v2
           coverage: none
 
-      - name: Verificar paquete y consumidor aislado / Validate isolated Composer consumer
+      - name: Verificar instalación local y GitHub VCS / Validate local and GitHub VCS consumers
         shell: pwsh
+        env:
+          PKG001_VCS_VERSION: ${{ github.event_name == 'pull_request' && format('dev-{0}', github.head_ref) || 'dev-main' }}
         run: |
           & {
             $ErrorActionPreference = 'Stop'
