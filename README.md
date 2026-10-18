@@ -19,6 +19,10 @@ Mantener la API pública de Simple HTML DOM 1.9.1 y aplicar correcciones increme
 - `benchmarks/`: infraestructura *smoke* F3-001; **no** proporciona comparativas concluyentes de rendimiento.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint de los archivos de biblioteca incluidos en este repositorio.
 
+### Primera beta de GitHub Releases
+
+La publicación `v0.1.0-beta.1` se prepara con validación automática de CI, ZIP y hashes en la [página de Releases](https://github.com/jarifais/simplehtmldom-modernized/releases/tag/v0.1.0-beta.1). Cuando el workflow REL-001 haya terminado correctamente, ahí estarán las descargas **permanentes** del PHP único, ZIP, licencia, notas bilingües y comprobaciones SHA-256. Es una versión preliminar; los tests actuales certifican PHP 8.4 en Windows y Ubuntu, **no** todas las versiones PHP declaradas. Consulta [la política de publicación](docs/REL_001.md).
+
 ### ZIP de distribución (desarrollo)
 
 La [construcción automática del ZIP](https://github.com/jarifais/simplehtmldom-modernized/actions/workflows/distribucion.yml) genera el artefacto `paquete-ubuntu-24.04` y su equivalente de Windows, con `simplehtmldom-modernized-development.zip` y su SHA-256. Abre una ejecución correcta de **Distribucion ZIP** y descarga el artefacto en **Artifacts**; para descargar artefactos de Actions puede ser necesario iniciar sesión en GitHub. El ZIP contiene `simple_html_dom.php`, la licencia MIT, instrucciones bilingües, un ejemplo y el manifiesto `SHA256SUMS.txt`. El ZIP se verifica desde una carpeta aislada; Linux y Windows deben producir archivos idénticos. Los artefactos de Actions son temporales (7 días en nuestro workflow): una descarga permanente mediante GitHub Releases se preparará en REL-001.
@@ -101,6 +105,10 @@ Preserve the public API of Simple HTML DOM 1.9.1 while introducing incremental, 
 - `servidor_objetivo/`: local test server and fixtures.
 - `benchmarks/`: F3-001 smoke-test infrastructure; **not** a conclusive performance comparison.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint for the library files included in this repository.
+
+### First GitHub Releases beta
+
+Version `v0.1.0-beta.1` is prepared with gated CI, ZIP and integrity checks on the [GitHub Releases page](https://github.com/jarifais/simplehtmldom-modernized/releases/tag/v0.1.0-beta.1). Once REL-001 completes successfully, it will offer **permanent downloads** of the single PHP file, ZIP, license, bilingual release notes and SHA-256 checksums. This is a prerelease; current automated verification covers PHP 8.4 on Windows and Ubuntu, **not** all declared PHP versions. See [release rules](docs/REL_001.md).
 
 ### ZIP distribution (development)
 
