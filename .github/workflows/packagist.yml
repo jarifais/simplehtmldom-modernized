@@ -1,0 +1,77 @@
+# PKG-002: no publication credentials, checks public Packagist only
+name: PKG-002 - Validacion Packagist / Packagist verification
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preflight:
+    name: Verificar script Packagist / Check verification script
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Obtener codigo / Checkout
+        uses: actions/checkout@v4
+
+      - name: Verificar sintaxis PowerShell y checkpoints / Check syntax and checkpoints
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            $source = './distribucion/verificar_packagist.ps1'
+            $tokens = $null
+            $errors = $null
+            $null = [System.Management.Automation.Language.Parser]::ParseFile(
+              (Resolve-Path $source).Path,
+              [ref]$tokens,
+              [ref]$errors
+            )
+            if ($errors.Count -ne 0) {
+              throw ('Error de sintaxis: ' + ($errors | Out-String))
+            }
+            $baseline = (Get-FileHash 'librerias/fase1/simple_html_dom.php' -Algorithm SHA256).Hash
+            $single = (Get-FileHash 'simple_html_dom.php' -Algorithm SHA256).Hash
+            if ($baseline -cne $single -or $baseline.ToLowerInvariant() -cne 'bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25') {
+              throw 'La biblioteca mantenida o descargable cambio.'
+            }
+            $original = (Get-FileHash 'librerias/original/simple_html_dom.php' -Algorithm SHA256).Hash
+            if ($original.ToLowerInvariant() -cne 'd3fcca27ce5d1c6ddb06402d8ea22ee1b3989f62c44e2025154c9d4eef501cdd') {
+              throw 'La biblioteca original cambio.'
+            }
+            Write-Host 'PKG-002 PREFLIGHT: PASS (sin registro ni pruebas Packagist)'
+          }
+
+  verificar:
+    name: Paquete Packagist - ${{ matrix.os }}
+    if: github.event_name == 'workflow_dispatch'
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - name: Obtener codigo / Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP 8.4 y Composer / Setup PHP 8.4 and Composer
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: iconv, mbstring, dom, xml, xmlwriter, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Verificar la publicacion real / Verify public Packagist installation
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            & ./distribucion/verificar_packagist.ps1
+          }
