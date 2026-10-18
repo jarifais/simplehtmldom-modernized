@@ -172,8 +172,10 @@ if (!openssl_pkey_export_to_file($key, $argv[2])) exit(5);
         & $phpExe $phpunit -c (Join-Path $root 'phpunit.xml') --log-junit $junit
         Assert-Check ($LASTEXITCODE -eq 0 -and (Test-Path $junit)) 'PHPUnit completo fallido o sin informe.'
         [xml]$report = Get-Content $junit -Raw -Encoding UTF8
-        $suite = $report.DocumentElement
-        Assert-Check ([int]$suite.GetAttribute('tests') -ge 62 -and [int]$suite.GetAttribute('failures') -eq 0 -and [int]$suite.GetAttribute('errors') -eq 0 -and [int]$suite.GetAttribute('skipped') -eq 0) 'JUnit no supera el contrato de la suite.'
+        # PHPUnit JUnit usa <testsuites> como raiz; contabilizar <testcase>.
+        $cases = @($report.SelectNodes('//testcase'))
+        $incidents = @($report.SelectNodes('//testcase/failure | //testcase/error | //testcase/skipped'))
+        Assert-Check ($cases.Count -ge 62 -and $incidents.Count -eq 0) 'JUnit no supera el contrato de la suite.'
         Write-Host 'PHPUNIT ESPECIFICO Y COMPLETO: PASS' -ForegroundColor Green
 
         foreach ($version in @('original','fase1')) {
