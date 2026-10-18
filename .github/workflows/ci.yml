@@ -49,3 +49,31 @@ jobs:
           path: resultados/
           if-no-files-found: warn
           retention-days: 7
+
+  consumidor-composer:
+    name: Instalacion Composer - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - name: Obtener codigo / Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP / Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: iconv, mbstring, dom, xml, xmlwriter, zip
+          tools: composer:v2
+          coverage: none
+
+      - name: Verificar paquete y consumidor aislado / Validate isolated Composer consumer
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            & ./distribucion/validar_composer.ps1
+          }
