@@ -32,8 +32,7 @@
         # Consultar el repositorio publico REAL, sin resolucion VCS local.
         $metadataUrl = "https://repo.packagist.org/p2/$package.json"
         $metadata = Invoke-RestMethod -Uri $metadataUrl -Method Get -TimeoutSec 30 -ErrorAction Stop
-        $versions = @($metadata.packages.$package)
-        # Access via the literal property name containing '/'.
+        # La clave JSON de Packagist contiene una barra: acceso literal.
         $versions = @($metadata.packages.'jarifais/simplehtmldom-modernized')
         Assert-Check ($versions.Count -gt 0) 'El paquete no esta registrado en Packagist.'
         $found = @($versions | Where-Object {
@@ -57,6 +56,8 @@
 {
     "name": "verificacion/simplehtmldom-packagist",
     "type": "project",
+    "description": "Prueba temporal de instalacion directa desde Packagist",
+    "license": "MIT",
     "require": {
         "jarifais/simplehtmldom-modernized": "0.1.0-beta.1"
     },
