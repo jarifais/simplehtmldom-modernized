@@ -119,6 +119,31 @@
             $fileStream.Dispose()
         }
 
+        # .NET marca el creador ZIP como Unix (3) o DOS/Windows (0).
+        # Estandarizamos el campo "version made by" de cada entrada central
+        # a Unix (3), sin tocar datos, CRC, tamaños ni rutas.
+        $zipBytes = [System.IO.File]::ReadAllBytes($temporaryZip)
+        $eocd = $zipBytes.Length - 22
+        Assert-Check ($eocd -ge 0) 'ZIP sin directorio central.'
+        Assert-Check ([BitConverter]::ToUInt32($zipBytes, $eocd) -eq 0x06054b50) 'Final de directorio ZIP no esperado.'
+        $entryCount = [int][BitConverter]::ToUInt16($zipBytes, $eocd + 10)
+        $centralSize = [int][BitConverter]::ToUInt32($zipBytes, $eocd + 12)
+        $centralStart = [int][BitConverter]::ToUInt32($zipBytes, $eocd + 16)
+        Assert-Check ($entryCount -eq $entries.Count -and $entryCount -eq 5) 'Cantidad ZIP central inesperada.'
+        Assert-Check ($centralStart -gt 0 -and $centralSize -gt 0 -and ($centralStart + $centralSize) -eq $eocd) 'Directorio central ZIP corrupto.'
+        $cursor = $centralStart
+        for ($i = 0; $i -lt $entryCount; $i++) {
+            Assert-Check (($cursor + 46) -le $eocd) 'Encabezado central truncado.'
+            Assert-Check ([BitConverter]::ToUInt32($zipBytes, $cursor) -eq 0x02014b50) 'Firma central ZIP inesperada.'
+            $zipBytes[$cursor + 5] = [byte]3
+            $nameLength = [int][BitConverter]::ToUInt16($zipBytes, $cursor + 28)
+            $extraLength = [int][BitConverter]::ToUInt16($zipBytes, $cursor + 30)
+            $commentLength = [int][BitConverter]::ToUInt16($zipBytes, $cursor + 32)
+            $cursor += 46 + $nameLength + $extraLength + $commentLength
+        }
+        Assert-Check ($cursor -eq $eocd) 'Longitud del directorio central ZIP inesperada.'
+        [System.IO.File]::WriteAllBytes($temporaryZip, $zipBytes)
+
         $unpack = Join-Path $scratch 'verificar'
         [System.IO.Compression.ZipFile]::ExtractToDirectory($temporaryZip, $unpack)
         $names = @(
