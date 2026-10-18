@@ -183,25 +183,7 @@ echo "PKG-001-CONSUMIDOR-PASS\n";
         # not the source checkout or a local Composer path repository.
         $vcsVersion = [string]$env:PKG001_VCS_VERSION
         Assert-Check (
-            $vcsVersion -match '^dev-[A-Za-z0-9_.\/-]+        Write-Host 'PKG-001: PASS - Composer instala y carga la API tradicional sin modificar el parser.' -ForegroundColor Green
-    } catch {
-        $issues.Add($_.Exception.Message)
-    } finally {
-        Set-Location $savedLocation
-        if (Test-Path -LiteralPath $scratch) {
-            try {
-                Remove-Item -LiteralPath $scratch -Recurse -Force -ErrorAction Stop
-            } catch {
-                $issues.Add("No se pudo borrar carpeta temporal: $($_.Exception.Message)")
-            }
-        }
-    }
-
-    if ($issues.Count -gt 0 -or -not $completed) {
-        throw ('PKG-001 NO VALIDADA: ' + ($issues -join ' | '))
-    }
-}
-
+            $vcsVersion -match '^dev-[A-Za-z0-9_.\/-]+$'
         ) 'Version VCS no suministrada o invalida.'
         $vcsConsumer = Join-Path $scratch 'consumidor-vcs'
         New-Item -ItemType Directory -Path $vcsConsumer -Force -ErrorAction Stop | Out-Null
