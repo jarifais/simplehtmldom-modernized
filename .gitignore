@@ -3,6 +3,7 @@
 /.phpunit.cache/
 /resultados/
 /runtime/
+/dist/
 
 # Credenciales y certificados / Credentials and certificates
 /certificados/

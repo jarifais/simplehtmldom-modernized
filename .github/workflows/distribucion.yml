@@ -1,0 +1,95 @@
+# DIST-002 — Construccion y comprobacion del ZIP / ZIP build and verification
+name: Distribucion ZIP / ZIP Distribution
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  construir:
+    name: Crear ZIP - ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, windows-2025]
+    steps:
+      - name: Obtener codigo / Checkout
+        uses: actions/checkout@v4
+
+      - name: Preparar PHP / Setup PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.4'
+          extensions: iconv, openssl, mbstring, dom, xml, zip
+          coverage: none
+
+      - name: Construir y probar ZIP / Build and test ZIP
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            & ./distribucion/crear_zip.ps1
+          }
+
+      - name: Publicar artefacto / Upload distribution artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: paquete-${{ matrix.os }}
+          path: |
+            dist/simplehtmldom-modernized-development.zip
+            dist/simplehtmldom-modernized-development.zip.sha256
+          if-no-files-found: error
+          retention-days: 7
+
+  reproducibilidad:
+    name: Identidad binaria entre sistemas / Cross-platform binary identity
+    needs: construir
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Descargar paquete Linux / Download Linux package
+        uses: actions/download-artifact@v4
+        with:
+          name: paquete-ubuntu-24.04
+          path: comprobar/linux
+
+      - name: Descargar paquete Windows / Download Windows package
+        uses: actions/download-artifact@v4
+        with:
+          name: paquete-windows-2025
+          path: comprobar/windows
+
+      - name: Comparar bytes y SHA-256 / Compare bytes and SHA-256
+        shell: pwsh
+        run: |
+          & {
+            $ErrorActionPreference = 'Stop'
+            $name = 'simplehtmldom-modernized-development.zip'
+            $linux = Join-Path 'comprobar/linux' $name
+            $windows = Join-Path 'comprobar/windows' $name
+            foreach ($file in @($linux,$windows)) {
+              if (-not (Test-Path -LiteralPath $file -PathType Leaf)) {
+                throw "Falta ZIP: $file"
+              }
+            }
+            $linuxHash = (Get-FileHash -LiteralPath $linux -Algorithm SHA256).Hash.ToLowerInvariant()
+            $windowsHash = (Get-FileHash -LiteralPath $windows -Algorithm SHA256).Hash.ToLowerInvariant()
+            if ($linuxHash -cne $windowsHash) {
+              throw "ZIP no reproducible: Linux=$linuxHash Windows=$windowsHash"
+            }
+            foreach ($folder in @('linux','windows')) {
+              $check = Get-Content -LiteralPath (Join-Path "comprobar/$folder" "$name.sha256") -Raw -Encoding utf8
+              if ($check.Trim() -cne "$linuxHash  $name") {
+                throw "Manifiesto externo incorrecto: $folder"
+              }
+            }
+            Write-Host "DIST-002: PASS - ZIP identico Linux/Windows. SHA-256: $linuxHash"
+          }
