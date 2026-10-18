@@ -1,0 +1,24 @@
+# Dependencias y caché / Dependencies and cache
+/vendor/
+/.phpunit.cache/
+/resultados/
+/runtime/
+
+# Credenciales y certificados / Credentials and certificates
+/certificados/
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Copias y ficheros generados / Backups and generated files
+/backup_*/
+*.bak
+*.log
+/INFORME_PRUEBAS_FASE_1.md
+/COMPARACION_ORIGINAL_FASE1.md
+/ERRORES_DETECTADOS.md
+/HASHES_LIBRERIAS.json

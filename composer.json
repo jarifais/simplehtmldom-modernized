@@ -1,0 +1,20 @@
+{
+    "name":  "antonio/simplehtmldom-entorno-pruebas-fase1",
+    "description":  "Entorno local reproducible para validar Simple HTML DOM 1.9.1 fase 1",
+    "type":  "project",
+    "require":  {
+                    "php":  "\u003e=8.2"
+                },
+    "require-dev":  {
+                        "phpunit/phpunit":  "^11.5"
+                    },
+    "scripts":  {
+                    "test":  [
+                                 "@php pruebas/ejecutar_todo.php",
+                                 "phpunit"
+                             ]
+                },
+    "config":  {
+                   "sort-packages":  true
+               }
+}

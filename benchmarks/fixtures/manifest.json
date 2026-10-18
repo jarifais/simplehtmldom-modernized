@@ -1,0 +1,44 @@
+{
+    "schema_version": 1,
+    "generator_version": "1.0.0",
+    "seed": 3001,
+    "implementations": [
+        {
+            "name": "original",
+            "relative_path": "librerias/original/simple_html_dom.php"
+        },
+        {
+            "name": "fase1",
+            "relative_path": "librerias/fase1/simple_html_dom.php"
+        }
+    ],
+    "fixtures": [
+        {
+            "name": "small",
+            "relative_path": "benchmarks/fixtures/small.html",
+            "size_bytes": 2895,
+            "sha256": "a4e4ceb1d707df36cbb3214cfbdcb2e4421147417f2de5cc6047496e773ebad7",
+            "node_count_expected": 85,
+            "seed": 3001,
+            "generator_version": "1.0.0"
+        },
+        {
+            "name": "medium",
+            "relative_path": "benchmarks/fixtures/medium.html",
+            "size_bytes": 28762,
+            "sha256": "28f2cc4d6e20500fd1af69c06e8a70244613d811cc9f8a3dfcb910cac2b10e96",
+            "node_count_expected": 805,
+            "seed": 3001,
+            "generator_version": "1.0.0"
+        },
+        {
+            "name": "large",
+            "relative_path": "benchmarks/fixtures/large.html",
+            "size_bytes": 87861,
+            "sha256": "263d82eedb88098dd45fe4b9ceb01f7654b55e7f6a4a3651dbe4810c05ff7c7b",
+            "node_count_expected": 2405,
+            "seed": 3001,
+            "generator_version": "1.0.0"
+        }
+    ]
+}
