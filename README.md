@@ -19,6 +19,10 @@ Mantener la API pública de Simple HTML DOM 1.9.1 y aplicar correcciones increme
 - `benchmarks/`: infraestructura *smoke* F3-001; **no** proporciona comparativas concluyentes de rendimiento.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint de los archivos de biblioteca incluidos en este repositorio.
 
+### ZIP de distribución (desarrollo)
+
+La [construcción automática del ZIP](https://github.com/jarifais/simplehtmldom-modernized/actions/workflows/distribucion.yml) genera el artefacto `paquete-ubuntu-24.04` y su equivalente de Windows, con `simplehtmldom-modernized-development.zip` y su SHA-256. Abre una ejecución correcta de **Distribucion ZIP** y descarga el artefacto en **Artifacts**; para descargar artefactos de Actions puede ser necesario iniciar sesión en GitHub. El ZIP contiene `simple_html_dom.php`, la licencia MIT, instrucciones bilingües, un ejemplo y el manifiesto `SHA256SUMS.txt`. El ZIP se verifica desde una carpeta aislada; Linux y Windows deben producir archivos idénticos. Los artefactos de Actions son temporales (7 días en nuestro workflow): una descarga permanente mediante GitHub Releases se preparará en REL-001.
+
 ### Instalación manual: archivo PHP único
 
 Descarga [`simple_html_dom.php`](simple_html_dom.php), pulsa **Raw** en GitHub y guarda el archivo junto a tu aplicación. No necesita Composer ni otros archivos de este repositorio para la carga clásica. Es una copia byte a byte de `librerias/fase1/simple_html_dom.php`, con SHA-256 `bba1d651b7c58eab6e70a031a6d8ca52b86c68bc746188440652f877b9110d25`. La versión continúa en desarrollo; todavía no existe una release estable.
@@ -76,6 +80,10 @@ Preserve the public API of Simple HTML DOM 1.9.1 while introducing incremental, 
 - `servidor_objetivo/`: local test server and fixtures.
 - `benchmarks/`: F3-001 smoke-test infrastructure; **not** a conclusive performance comparison.
 - `HASHES_LIBRERIAS_BASE.json`: checkpoint for the library files included in this repository.
+
+### ZIP distribution (development)
+
+The [automated ZIP build](https://github.com/jarifais/simplehtmldom-modernized/actions/workflows/distribucion.yml) publishes the `paquete-ubuntu-24.04` artifact and its Windows counterpart, including `simplehtmldom-modernized-development.zip` and its SHA-256. Open a successful **Distribucion ZIP** workflow run and download the artifact under **Artifacts**; signing in to GitHub may be required. The ZIP contains `simple_html_dom.php`, the MIT license, bilingual instructions, an example, and a `SHA256SUMS.txt` manifest. Both platforms must produce identical archives and the package is tested outside the repository. Workflow artifacts expire after 7 days; permanent downloadable release assets are planned for REL-001.
 
 ### Manual installation: one PHP file
 
