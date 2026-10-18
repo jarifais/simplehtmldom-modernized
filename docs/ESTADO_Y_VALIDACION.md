@@ -36,19 +36,6 @@ Ejecución real en Linux/PHP 8.4.24, sobre la selección de archivos preparada p
 
 Los logs y el informe de esta comprobación se conservan fuera del paquete público y se entregan para revisión junto con él.
 
-### Validación nueva de la copia publicable (2026-10-18)
-
-Ejecución real en Linux/PHP 8.4.24, sobre la selección de archivos preparada para Git:
-
-- HTTP y HTTPS locales: PASS.
-- Suite funcional: fase1 22 PASS / 0 FAIL; original 10 PASS / 12 FAIL (diferencial esperado).
-- Comparación API pública: idéntica; checkpoint de bibliotecas: intacto.
-- Smoke F3-001: 126/126 PASS; 0 discrepancias, errores o timeouts.
-- Finalización: servidores detenidos y certificados temporales retirados.
-- PHPUnit completo: **NO EJECUTADO** por ausencia de extensiones `dom`, `mbstring` y `xmlwriter` en este PHP.
-
-Los logs y el informe de esta comprobación se conservan fuera del paquete público y se entregan para revisión junto con él.
-
 ### Criterios de publicación
 
 - No se modifican los PHP originales ni las licencias.
@@ -80,19 +67,6 @@ The provided `RESULTADO_PRUEBAS_FASE_2.md` records the following after F2-007:
 - Public API, hashes, UTF-8, and server shutdown: PASS.
 
 These figures are **historical evidence**, not GitHub Actions runs or multi-version compatibility certification.
-
-### New validation of the publishable snapshot (2026-10-18)
-
-Fresh execution on Linux/PHP 8.4.24 using the selected files prepared for Git:
-
-- Local HTTP and HTTPS: PASS.
-- Functional suite: maintained version 22 PASS / 0 FAIL; original 10 PASS / 12 FAIL (expected differential).
-- Public API comparison: unchanged; library checkpoint: unchanged.
-- F3-001 smoke: 126/126 PASS; no mismatches, errors, or timeouts.
-- Cleanup: local servers stopped and temporary certificates removed.
-- Full PHPUnit suite: **NOT RUN** because the `dom`, `mbstring`, and `xmlwriter` PHP extensions are unavailable.
-
-Logs and evidence for these checks are kept outside the public package and supplied separately for review.
 
 ### New validation of the publishable snapshot (2026-10-18)
 
