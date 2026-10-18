@@ -179,6 +179,74 @@ echo "PKG-001-CONSUMIDOR-PASS\n";
 
         $after = @(& $git -C $root status --porcelain --untracked-files=no)
         Assert-Check ($LASTEXITCODE -eq 0 -and $after.Count -eq 0) 'Archivos versionados modificados por prueba Composer.'
+        # Second integration: resolve the actual public GitHub VCS branch,
+        # not the source checkout or a local Composer path repository.
+        $vcsVersion = [string]$env:PKG001_VCS_VERSION
+        Assert-Check (
+            $vcsVersion -match '^dev-[A-Za-z0-9_.\/-]+        Write-Host 'PKG-001: PASS - Composer instala y carga la API tradicional sin modificar el parser.' -ForegroundColor Green
+    } catch {
+        $issues.Add($_.Exception.Message)
+    } finally {
+        Set-Location $savedLocation
+        if (Test-Path -LiteralPath $scratch) {
+            try {
+                Remove-Item -LiteralPath $scratch -Recurse -Force -ErrorAction Stop
+            } catch {
+                $issues.Add("No se pudo borrar carpeta temporal: $($_.Exception.Message)")
+            }
+        }
+    }
+
+    if ($issues.Count -gt 0 -or -not $completed) {
+        throw ('PKG-001 NO VALIDADA: ' + ($issues -join ' | '))
+    }
+}
+
+        ) 'Version VCS no suministrada o invalida.'
+        $vcsConsumer = Join-Path $scratch 'consumidor-vcs'
+        New-Item -ItemType Directory -Path $vcsConsumer -Force -ErrorAction Stop | Out-Null
+        $vcsManifest = @{
+            name = 'verificacion/consumidor-github'
+            description = 'Isolated public GitHub VCS consumer'
+            type = 'project'
+            repositories = @(@{
+                type = 'vcs'
+                url = 'https://github.com/jarifais/simplehtmldom-modernized.git'
+            })
+            require = @{
+                'jarifais/simplehtmldom-modernized' = $vcsVersion
+            }
+            config = @{ 'allow-plugins' = $false }
+        }
+        [System.IO.File]::WriteAllText(
+            (Join-Path $vcsConsumer 'composer.json'),
+            (ConvertTo-Json $vcsManifest -Depth 12) + [string][char]10,
+            $strictUtf8
+        )
+        Push-Location $vcsConsumer
+        try {
+            & composer install --no-interaction --no-plugins --no-scripts --prefer-dist --no-progress
+            Assert-Check ($LASTEXITCODE -eq 0) 'Composer no pudo instalar desde GitHub VCS.'
+        } finally {
+            Pop-Location
+        }
+        $vcsInstalled = Join-Path $vcsConsumer 'vendor/jarifais/simplehtmldom-modernized'
+        $vcsAutoload = Join-Path $vcsConsumer 'vendor/autoload.php'
+        $vcsSource = Join-Path $vcsInstalled 'librerias/fase1/simple_html_dom.php'
+        foreach ($file in @($vcsSource,(Join-Path $vcsInstalled 'simple_html_dom.php'))) {
+            Assert-Check (Test-Path -LiteralPath $file -PathType Leaf) "Fuente VCS ausente: $file"
+            Assert-Check (
+                (Get-FileHash -LiteralPath $file -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $expectedPhase
+            ) "Biblioteca GitHub VCS distinta al checkpoint: $file"
+        }
+        Assert-Check (Test-Path -LiteralPath $vcsAutoload -PathType Leaf) 'autoload del consumidor GitHub ausente.'
+        $vcsProbe = @(& $php $probePath $vcsAutoload $vcsSource 2>&1)
+        Assert-Check (
+            $LASTEXITCODE -eq 0 -and
+            ($vcsProbe -join '').Trim() -ceq 'PKG-001-CONSUMIDOR-PASS'
+        ) ('La API de GitHub VCS ha fallado: ' + ($vcsProbe -join ' | '))
+        Write-Host "PKG-001: GITHUB VCS PASS ($vcsVersion)" -ForegroundColor Green
+
         $completed = $true
         Write-Host 'PKG-001: PASS - Composer instala y carga la API tradicional sin modificar el parser.' -ForegroundColor Green
     } catch {
