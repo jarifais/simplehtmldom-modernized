@@ -1,5 +1,6 @@
 # Dependencias y caché / Dependencies and cache
 /vendor/
+/composer.lock
 /.phpunit.cache/
 /resultados/
 /runtime/
